@@ -1,0 +1,55 @@
+--------------------------------------------------------------------------------
+-- Company: <Name>
+--
+-- File: conversion.vhd
+-- File history:
+--      <Revision number>: <Date>: <Comments>
+--      <Revision number>: <Date>: <Comments>
+--      <Revision number>: <Date>: <Comments>
+--
+-- Description: 
+--
+-- <Description here>
+--
+-- Targeted device: <Family::PolarFire> <Die::MPF100T> <Package::FCG484>
+-- Author: <Name>
+--
+--------------------------------------------------------------------------------
+
+library IEEE;
+
+use IEEE.std_logic_1164.all;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use ieee.NUMERIC_STD.all;
+
+entity conversion is
+port (
+    --<port_name> : <direction> <type>;
+	UT : IN  std_logic_vector(15 downto 0) ;
+    temp : out std_logic_vector(7 downto 0));
+end conversion;
+
+architecture architecture_conversion of conversion is
+   SIGNAL X1,X2,A,C,B5,D,E,F           : integer:=0;
+   --CONSTANT AC5         : integer :=32757;
+   CONSTANT AC6     : integer := 23153;
+   CONSTANT MC     : integer := -8711;
+   CONSTANT MD     : integer := 2868;
+   SIGNAL temp2     : std_logic_vector(7 downto 0);
+
+begin
+	-- UT <= data_rd;
+	-- ut_int <= to_integer(unsigned(UT));
+	A <= to_integer(unsigned(UT));
+	E<= (A- AC6); 
+	F <=  E* 9996;
+    X1 <= F/10000;
+    C <= 2048/(X1 + MD);
+    X2 <= MC * C;
+    B5 <= X1+ X2;
+    D <= (B5 + 8)/16;
+    temp2 <= std_logic_vector(to_unsigned(D/10, 8)) ;
+    
+    temp <= x"00" when (UT = x"0000" or temp2 = x"70") else temp2;
+
+end architecture_conversion;
